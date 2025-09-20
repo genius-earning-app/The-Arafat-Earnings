@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-  <title>The_Arafat_Earnings_Bot (Firebase)</title>
+  <title>Genius_Ads_Earning_Bot (Firebase)</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- এই লাইনটি এখানে যুক্ত করুন -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --primary-color: #6a11cb;
@@ -95,7 +97,7 @@
     .profile-action-button i:last-child { color: var(--text-muted-color); }
 
     .progress-card { text-align: center; }
-    .progress-card h3 { margin-top: 0; }
+    .progress-card h3 { margin-top: 0; } 
     .progress-card .progress-info { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: var(--text-muted-color); }
     .progress-bar { width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
     .progress-bar-inner { height: 100%; width: 0%; background: var(--primary-color); border-radius: 4px; }
@@ -585,23 +587,19 @@
     </div>
   </div>
 
-<!-- Ad Script as requested by user -->
-<script src='//libtl.com/sdk.js' data-zone='9892740' data-sdk='show_9892740'></script>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, onValue, set, get, update, push, runTransaction, onChildAdded, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
     const firebaseConfig = {
-    apiKey: "AIzaSyDfn1veuHMeHCbqgYQs_KEREDgwVmBxSHw",
-    authDomain: "the-arafat-earnings.firebaseapp.com",
-    databaseURL: "https://the-arafat-earnings-default-rtdb.firebaseio.com",
-    projectId: "the-arafat-earnings",
-    storageBucket: "the-arafat-earnings.firebasestorage.app",
-    messagingSenderId: "1082223011616",
-    appId: "1:1082223011616:web:3de7e7438ca002dda6d945",
-    measurementId: "G-T9NY7D2RW8"
+    apiKey: "AIzaSyBIyRCpm3tLVxgsN7W_OFNBr6v5CX3HcYg",
+    authDomain: "genius-earning-bot.firebaseapp.com",
+    databaseURL: "https://genius-earning-bot-default-rtdb.firebaseio.com",
+    projectId: "genius-earning-bot",
+    storageBucket: "genius-earning-bot.firebasestorage.app",
+    messagingSenderId: "1063434671346",
+    appId: "1:1063434671346:web:ed06bda4e9ef76d4f52c6b"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -684,7 +682,7 @@
                 appConfig = snapshot.val();
                 if (!isConfigLoaded) {
                     isConfigLoaded = true;
-                    if (checkVersionAndNotice()) return; 
+                    if (checkVersionAndNotice()) return; // checkVersionAndNotice now returns true if an update is required, halting further execution
                     initializeUser();
                 }
                 applyTheme(appConfig);
@@ -768,11 +766,12 @@
                 initializeAppUI(); 
             }
             await checkAndResetDailyStats();
-            await checkVpnStatus(); 
+            await checkVpnStatus(); // === NEW: VPN Check
             updateDisplay();
         });
     }
 
+    // === NEW: VPN/Proxy Detection Function ===
     async function checkVpnStatus() {
         const vpnConfig = appConfig.fraudDetection?.vpnDetection;
         if (!vpnConfig || !vpnConfig.enabled) return;
@@ -783,6 +782,7 @@
             const data = await response.json();
 
             if (data.status === 'success' && (data.proxy || data.hosting)) {
+                // VPN/Proxy detected
                 const action = vpnConfig.action || 'warn';
                 if (action === 'warn') {
                     showToast("VPN/Proxy usage is discouraged and may affect earnings.", "error", 5000);
@@ -792,6 +792,8 @@
                 } else if (action === 'block_account') {
                     document.getElementById('vpn-blocked-overlay').style.display = 'flex';
                     document.querySelector('.container').style.display = 'none';
+                    // Optionally, update user status in Firebase
+                    // await update(userRef, { isBlocked: true, blockReason: "Auto-detected VPN/Proxy usage." });
                 }
             }
         } catch (error) {
@@ -840,17 +842,13 @@
         setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; document.querySelector('.container').style.display = 'flex'; }, 500);
     }
     
+    // === MODIFIED: checkVersionAndNotice now shows a modal ===
     function checkVersionAndNotice() {
-        if (appConfig.maintenanceMode) {
-            document.getElementById('maintenance-overlay').style.display = 'flex';
-            document.querySelector('.container').style.display = 'none';
-            return true;
-        }
         if (appConfig.appVersion && appConfig.appVersion !== clientVersion) {
             const updateText = appConfig.appUpdateMessage || "A new version is available. Please restart the bot to apply the update.";
             document.getElementById('app-update-text').textContent = updateText;
             document.getElementById('app-update-modal').classList.add('active');
-            return true; 
+            return true; // Halt further app initialization
         }
         const announcement = appConfig.announcement || ''; const bannerContainer = document.getElementById('announcement-banner-container');
         if (announcement.trim() !== '' && !sessionStorage.getItem('announcement_closed')) { bannerContainer.innerHTML = `<div id="announcement-banner"><span>${announcement}</span><button onclick="window.closeAnnouncement()">&times;</button></div>`; }
@@ -981,8 +979,9 @@
         }
     }
 
+    // === MODIFIED: grantCommission replaced with grantMultiLevelCommission ===
     async function grantMultiLevelCommission(basePointsEarned, earningUserId, level = 1) {
-        if (level > 3) return; 
+        if (level > 3) return; // Limit to 3 levels to prevent infinite loops
 
         const earningUserSnapshot = await get(ref(database, `app/users/${earningUserId}`));
         if (!earningUserSnapshot.exists()) return;
@@ -1026,6 +1025,7 @@
                     };
                     await update(referrerRef, updates);
                     
+                    // Recursive call for the next level
                     await grantMultiLevelCommission(basePointsEarned, referrerId, level + 1);
                 }
             }
@@ -1065,11 +1065,10 @@
         const overlay = document.getElementById('timer-notification-overlay'), overlayContent = document.getElementById('timer-notification-content');
         const adTimerSeconds = network.timer || appConfig.adWatchTimerSeconds || 30;
         
-        // This is the ad function call as per your script's data-sdk attribute
-        if (typeof show_9892740 === 'function') {
-            show_9892740().catch(e => console.error("Ad SDK error:", e));
+        if (typeof show_9892808 === 'function') {
+            show_9892808().catch(e => console.error("Ad SDK error:", e));
         } else {
-            console.warn("Ad SDK function 'show_9892740' not found. Please check if the ad script loaded correctly.");
+            console.warn("Ad SDK function not found.");
         }
 
         overlay.style.display = 'flex'; let countdown = adTimerSeconds;
@@ -1739,7 +1738,7 @@
     function renderOfferwall() {
         const container = document.getElementById('offerwall-content-container');
         if (!appConfig.offerwall?.enabled) {
-            container.innerHTML = `<div class="no-data"><i class="fa-solid fa-store-slash"></i><p>Offerwall is currently unavailable.</p></div>`;
+            container.innerHTML = `<div class="no-data"><i class="fa-solid fa- दुकान-slash"></i><p>Offerwall is currently unavailable.</p></div>`;
             return;
         }
         container.innerHTML = `
