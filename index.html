@@ -384,7 +384,12 @@
             <a href="#" target="_blank" class="action-button" id="shopping-button">Start Shopping Now &nbsp; <i class="fa-solid fa-arrow-right"></i></a>
         </div>
         <div class="stats-grid">
-            <div class="stats-card full-width-stats"><div class="icon"><i class="fa-solid fa-wallet"></i></div><h3 class="value" id="home-total-earnings"><span class="points-value">0 Points</span><span class="bdt-value">...</span></h3><p class="label" id="home-total-earnings-label">Total Earnings</p></div>
+            <!-- MODIFIED: This card now shows current balance -->
+            <div class="stats-card full-width-stats">
+                <div class="icon"><i class="fa-solid fa-wallet"></i></div>
+                <h3 class="value" id="home-total-earnings"><span class="points-value">0 Points</span><span class="bdt-value">...</span></h3>
+                <p class="label" id="home-total-earnings-label">Current Balance</p>
+            </div>
             <div class="stats-card"><div class="icon"><i class="fa-solid fa-eye"></i></div><h3 class="value" id="home-ads-watched">0</h3><p class="label" id="home-ads-watched-label">Ads Watched (Total)</p></div>
             <div class="stats-card"><div class="icon"><i class="fa-solid fa-users"></i></div><h3 class="value" id="home-total-referrals">0</h3><p class="label" id="home-total-referrals-label">Total Referrals</p></div>
             <div class="stats-card"><div class="icon"><i class="fa-solid fa-list-check"></i></div><h3 class="value" id="home-total-tasks-completed">0</h3><p class="label">Total Task</p></div>
@@ -589,7 +594,6 @@
 
     // --- MODIFICATION: BOOTSTRAP CONFIG ---
     // This is a minimal, hardcoded config. Its ONLY purpose is to fetch the REAL config from the database.
-    // It should never change.
     const bootstrapFirebaseConfig = {
         apiKey: "AIzaSyDfn1veuHMeHCbqgYQs_KEREDgwVmBxSHw",
         authDomain: "the-arafat-earnings.firebaseapp.com",
@@ -616,7 +620,6 @@
     let currentReferralsPage = 1;
 
     // --- APP BOOTSTRAPPER ---
-    // This new function starts the entire process.
     async function bootstrapApp() {
         try {
             const bootstrapApp = initializeApp(bootstrapFirebaseConfig, "bootstrap");
@@ -631,15 +634,13 @@
                 if (appConfig.telegramScript && appConfig.telegramScript.enabled) {
                     const tgScript = document.createElement('script');
                     tgScript.src = 'https://telegram.org/js/telegram-web-app.js';
-                    tgScript.async = false; // Load it before the main script continues
+                    tgScript.async = false;
                     tgScript.onload = () => {
                         console.log("Telegram Web App script loaded.");
-                        // Now that the script is loaded, continue initialization
                         initializeAppWithConfig(appConfig.firebaseConfig);
                     };
                     document.head.appendChild(tgScript);
                 } else {
-                    // If script is disabled, continue without it
                     initializeAppWithConfig(appConfig.firebaseConfig);
                 }
             } else {
@@ -651,13 +652,11 @@
         }
     }
 
-    // This function initializes the main app after fetching the config.
     function initializeAppWithConfig(firebaseConfig) {
         app = initializeApp(firebaseConfig);
         database = getDatabase(app);
         storage = getStorage(app);
 
-        // Initialize refs
         configRef = ref(database, 'app/config');
         usersRef = ref(database, 'app/users');
         withdrawRequestsRef = ref(database, 'app/withdraw_requests');
@@ -668,38 +667,26 @@
         leaderboardRef = ref(database, 'app/leaderboard');
         lotteryRef = ref(database, 'app/lottery');
         
-        // Start the original app logic
         initApp();
     }
-
 
     function showToast(message, type = 'info', duration = 3000) {
         const container = document.getElementById('toast-container');
         if (!container) return;
-
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-        
         const iconClass = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-times-circle' : 'fa-info-circle');
         toast.innerHTML = `<span class="icon"><i class="fas ${iconClass}"></i></span> <p>${message}</p>`;
-        
         container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 100);
-
+        setTimeout(() => { toast.classList.add('show'); }, 100);
         setTimeout(() => {
             toast.classList.remove('show');
             setTimeout(() => {
-                if (toast.parentElement === container) {
-                    container.removeChild(toast);
-                }
+                if (toast.parentElement === container) container.removeChild(toast);
             }, 500);
         }, duration);
     }
     
-    // --- MODIFIED: Start the bootstrap process on DOMContentLoaded ---
     document.addEventListener('DOMContentLoaded', () => { bootstrapApp(); });
 
     async function initApp() {
@@ -719,7 +706,6 @@
 
         userRef = ref(database, `app/users/${tgUser.id}`);
         
-        // Config is already loaded, so we just use it
         isConfigLoaded = true;
         if (checkVersionAndNotice()) return; 
         initializeUser();
@@ -978,7 +964,11 @@
         const currencySymbol = appConfig.currency || 'BDT'; const pointsPerCurrency = appConfig.pointsPerCurrency || 100;
         const pointsBalance = userData.balance || 0; const balanceInBdt = pointsBalance / pointsPerCurrency;
         document.getElementById('header-balance').textContent = `${currencySymbol} ${balanceInBdt.toFixed(2)}`;
-        document.getElementById('home-total-earnings').innerHTML = `<span class="points-value">${(userData.totalEarnings || 0).toLocaleString()} Points</span><span class="bdt-value">${currencySymbol} ${((userData.totalEarnings || 0) / pointsPerCurrency).toFixed(2)}</span>`;
+        
+        // --- MODIFIED: Changed home-total-earnings to show current balance for consistency ---
+        document.getElementById('home-total-earnings').innerHTML = `<span class="points-value">${pointsBalance.toLocaleString()} Points</span><span class="bdt-value">${currencySymbol} ${balanceInBdt.toFixed(2)}</span>`;
+        document.getElementById('home-total-earnings-label').textContent = "Current Balance"; // Changed label for clarity
+
         document.getElementById('home-ads-watched').textContent = userData.totalAdsWatched || 0;
         document.getElementById('home-total-referrals').textContent = userData.referralsList ? Object.keys(userData.referralsList).length : 0;
         document.getElementById('home-total-tasks-completed').textContent = userData.tasksState ? Object.values(userData.tasksState).filter(s => s.completed).length : 0;
@@ -1011,8 +1001,17 @@
 
     function loadTelegramUser() {
         if (tgUser && userData.profile) {
-            const { firstName, lastName, username, photo_url } = userData.profile;
+            let { firstName, lastName, username, photo_url } = userData.profile;
             const userName = firstName || 'User'; document.getElementById('header-username').textContent = userName;
+            
+            // --- MODIFIED: Self-healing for profile picture ---
+            if (!photo_url && tgUser.photo_url) {
+                // If photo_url is missing in DB but available from Telegram now, update it.
+                update(userRef, { 'profile/photo_url': tgUser.photo_url });
+                photo_url = tgUser.photo_url; // Use it immediately for display
+            }
+            // --- END OF MODIFICATION ---
+
             const headerAvatar = document.getElementById('header-avatar-placeholder');
             const avatarUrl = photo_url || appConfig.assets?.defaultAvatar || `https://i.pravatar.cc/150?u=${tgUser.id}`;
             headerAvatar.innerHTML = `<img src="${avatarUrl}" alt="A">`;
