@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-  <title>Genius_Ads_Earning_Bot (Firebase)</title>
+  <title>The_Arafat_Earnings_Bot (Firebase)</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- এই লাইনটি এখানে যুক্ত করুন -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
       --primary-color: #6a11cb;
@@ -97,7 +95,7 @@
     .profile-action-button i:last-child { color: var(--text-muted-color); }
 
     .progress-card { text-align: center; }
-    .progress-card h3 { margin-top: 0; } 
+    .progress-card h3 { margin-top: 0; }
     .progress-card .progress-info { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: var(--text-muted-color); }
     .progress-bar { width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
     .progress-bar-inner { height: 100%; width: 0%; background: var(--primary-color); border-radius: 4px; }
@@ -364,11 +362,9 @@
   <div id="toast-container" class="toast-container"></div>
   <div class="system-overlay" id="loading-overlay"><div class="spinner"></div><p>Loading Settings...</p></div>
   <div class="system-overlay" id="blocked-overlay" style="display: none;"><i class="fa-solid fa-ban" style="color: var(--status-failed);"></i><div><h2>Access Denied</h2><p>Your account has been blocked by the administrator.</p></div></div>
-  <!-- === NEW: VPN Blocked Overlay === -->
   <div class="system-overlay" id="vpn-blocked-overlay" style="display: none;"><i class="fa-solid fa-shield-halved" style="color: var(--status-failed);"></i><div><h2>Access Restricted</h2><p>Your account has been restricted due to suspicious network activity (VPN/Proxy detected). Please disable it and restart the bot.</p></div></div>
   <div class="system-overlay" id="maintenance-overlay" style="display: none;"><i class="fa-solid fa-screwdriver-wrench" style="color: var(--status-task);"></i><h2>Under Maintenance</h2><p>The app is currently undergoing maintenance. Please check back later.</p></div>
-  <!-- === MODIFIED: Update overlay is now a modal, so the old overlay is removed. -->
-
+  
   <div class="container" style="display: none;">
     <div id="announcement-banner-container"></div>
     <main id="main-content">
@@ -576,7 +572,6 @@
     </div>
   </div>
 
-  <!-- === NEW: App Update Modal === -->
   <div class="modal-overlay" id="app-update-modal">
     <div class="modal-content" style="text-align: center;">
         <div class="modal-header" style="justify-content: center;"><h3><i class="fa-solid fa-triangle-exclamation" style="color: var(--status-pending); margin-right: 10px;"></i>Update Required</h3></div>
@@ -592,33 +587,19 @@
     import { getDatabase, ref, onValue, set, get, update, push, runTransaction, onChildAdded, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-    const firebaseConfig = {
-    apiKey: "AIzaSyBIyRCpm3tLVxgsN7W_OFNBr6v5CX3HcYg",
-    authDomain: "genius-earning-bot.firebaseapp.com",
-    databaseURL: "https://genius-earning-bot-default-rtdb.firebaseio.com",
-    projectId: "genius-earning-bot",
-    storageBucket: "genius-earning-bot.firebasestorage.app",
-    messagingSenderId: "1063434671346",
-    appId: "1:1063434671346:web:ed06bda4e9ef76d4f52c6b"
+    // --- MODIFICATION: BOOTSTRAP CONFIG ---
+    // This is a minimal, hardcoded config. Its ONLY purpose is to fetch the REAL config from the database.
+    // It should never change.
+    const bootstrapFirebaseConfig = {
+        apiKey: "AIzaSyDfn1veuHMeHCbqgYQs_KEREDgwVmBxSHw",
+        authDomain: "the-arafat-earnings.firebaseapp.com",
+        databaseURL: "https://the-arafat-earnings-default-rtdb.firebaseio.com",
     };
 
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-    const storage = getStorage(app);
+    // --- GLOBAL VARIABLES ---
+    let app, database, storage;
+    let configRef, usersRef, userRef, withdrawRequestsRef, globalNotificationRef, promoCodesRef, supportTicketsRef, taskSubmissionsRef, leaderboardRef, lotteryRef;
     
-    const configRef = ref(database, 'app/config');
-    const usersRef = ref(database, 'app/users');
-    let userRef;
-    const withdrawRequestsRef = ref(database, 'app/withdraw_requests');
-    const globalNotificationRef = ref(database, 'app/global_notification');
-    const promoCodesRef = ref(database, 'app/promo_codes');
-    const supportTicketsRef = ref(database, 'app/support_tickets');
-    const taskSubmissionsRef = ref(database, 'app/task_submissions');
-    const leaderboardRef = ref(database, 'app/leaderboard');
-    const lotteryRef = ref(database, 'app/lottery');
-
-
-    const clientVersion = "1.0.0"; 
     let appConfig = {}; 
     let userData = {};
     let lotteryData = {};
@@ -626,11 +607,71 @@
     let isConfigLoaded = false;
     let isUserLoaded = false;
     let isLoginTracked = false;
-    let isEarningBlocked = false; // === NEW: Global flag for blocking earning due to VPN
+    let isEarningBlocked = false;
+    let isAdScriptLoaded = false;
+    const clientVersion = "1.0.0"; 
 
     let currentHistoryPage = 1;
     const itemsPerPage = 15;
     let currentReferralsPage = 1;
+
+    // --- APP BOOTSTRAPPER ---
+    // This new function starts the entire process.
+    async function bootstrapApp() {
+        try {
+            const bootstrapApp = initializeApp(bootstrapFirebaseConfig, "bootstrap");
+            const bootstrapDb = getDatabase(bootstrapApp);
+            const configSnapshot = await get(ref(bootstrapDb, 'app/config'));
+            
+            if (configSnapshot.exists()) {
+                const remoteConfig = configSnapshot.val();
+                appConfig = remoteConfig;
+
+                // Load Telegram script if enabled
+                if (appConfig.telegramScript && appConfig.telegramScript.enabled) {
+                    const tgScript = document.createElement('script');
+                    tgScript.src = 'https://telegram.org/js/telegram-web-app.js';
+                    tgScript.async = false; // Load it before the main script continues
+                    tgScript.onload = () => {
+                        console.log("Telegram Web App script loaded.");
+                        // Now that the script is loaded, continue initialization
+                        initializeAppWithConfig(appConfig.firebaseConfig);
+                    };
+                    document.head.appendChild(tgScript);
+                } else {
+                    // If script is disabled, continue without it
+                    initializeAppWithConfig(appConfig.firebaseConfig);
+                }
+            } else {
+                throw new Error("Critical configuration not found in database.");
+            }
+        } catch (error) {
+            console.error("Bootstrap failed:", error);
+            document.getElementById('loading-overlay').innerHTML = `<p>Error: Could not load critical app settings. Please contact support.</p>`;
+        }
+    }
+
+    // This function initializes the main app after fetching the config.
+    function initializeAppWithConfig(firebaseConfig) {
+        app = initializeApp(firebaseConfig);
+        database = getDatabase(app);
+        storage = getStorage(app);
+
+        // Initialize refs
+        configRef = ref(database, 'app/config');
+        usersRef = ref(database, 'app/users');
+        withdrawRequestsRef = ref(database, 'app/withdraw_requests');
+        globalNotificationRef = ref(database, 'app/global_notification');
+        promoCodesRef = ref(database, 'app/promo_codes');
+        supportTicketsRef = ref(database, 'app/support_tickets');
+        taskSubmissionsRef = ref(database, 'app/task_submissions');
+        leaderboardRef = ref(database, 'app/leaderboard');
+        lotteryRef = ref(database, 'app/lottery');
+        
+        // Start the original app logic
+        initApp();
+    }
+
 
     function showToast(message, type = 'info', duration = 3000) {
         const container = document.getElementById('toast-container');
@@ -657,8 +698,9 @@
             }, 500);
         }, duration);
     }
-
-    document.addEventListener('DOMContentLoaded', () => { initApp(); });
+    
+    // --- MODIFIED: Start the bootstrap process on DOMContentLoaded ---
+    document.addEventListener('DOMContentLoaded', () => { bootstrapApp(); });
 
     async function initApp() {
         if (window.Telegram && Telegram.WebApp) {
@@ -676,22 +718,13 @@
         }
 
         userRef = ref(database, `app/users/${tgUser.id}`);
-
-        onValue(configRef, (snapshot) => {
-            if (snapshot.exists()) {
-                appConfig = snapshot.val();
-                if (!isConfigLoaded) {
-                    isConfigLoaded = true;
-                    if (checkVersionAndNotice()) return; // checkVersionAndNotice now returns true if an update is required, halting further execution
-                    initializeUser();
-                }
-                applyTheme(appConfig);
-                updateDynamicElements();
-                updateDisplay();
-            } else {
-                document.getElementById('loading-overlay').innerHTML = "<p>Error: Could not load app settings.</p>";
-            }
-        });
+        
+        // Config is already loaded, so we just use it
+        isConfigLoaded = true;
+        if (checkVersionAndNotice()) return; 
+        initializeUser();
+        applyTheme(appConfig);
+        updateDynamicElements();
         
         onValue(lotteryRef, (snapshot) => {
             lotteryData = snapshot.val() || {};
@@ -766,23 +799,21 @@
                 initializeAppUI(); 
             }
             await checkAndResetDailyStats();
-            await checkVpnStatus(); // === NEW: VPN Check
+            await checkVpnStatus(); 
             updateDisplay();
         });
     }
 
-    // === NEW: VPN/Proxy Detection Function ===
     async function checkVpnStatus() {
         const vpnConfig = appConfig.fraudDetection?.vpnDetection;
         if (!vpnConfig || !vpnConfig.enabled) return;
 
         try {
-            const response = await fetch('http://ip-api.com/json/?fields=status,message,proxy,hosting,query');
+            const response = await fetch('https://ip-api.com/json/?fields=status,message,proxy,hosting,query');
             if (!response.ok) return; 
             const data = await response.json();
 
             if (data.status === 'success' && (data.proxy || data.hosting)) {
-                // VPN/Proxy detected
                 const action = vpnConfig.action || 'warn';
                 if (action === 'warn') {
                     showToast("VPN/Proxy usage is discouraged and may affect earnings.", "error", 5000);
@@ -792,8 +823,6 @@
                 } else if (action === 'block_account') {
                     document.getElementById('vpn-blocked-overlay').style.display = 'flex';
                     document.querySelector('.container').style.display = 'none';
-                    // Optionally, update user status in Firebase
-                    // await update(userRef, { isBlocked: true, blockReason: "Auto-detected VPN/Proxy usage." });
                 }
             }
         } catch (error) {
@@ -842,13 +871,17 @@
         setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; document.querySelector('.container').style.display = 'flex'; }, 500);
     }
     
-    // === MODIFIED: checkVersionAndNotice now shows a modal ===
     function checkVersionAndNotice() {
+        if (appConfig.maintenanceMode) {
+            document.getElementById('maintenance-overlay').style.display = 'flex';
+            document.querySelector('.container').style.display = 'none';
+            return true;
+        }
         if (appConfig.appVersion && appConfig.appVersion !== clientVersion) {
             const updateText = appConfig.appUpdateMessage || "A new version is available. Please restart the bot to apply the update.";
             document.getElementById('app-update-text').textContent = updateText;
             document.getElementById('app-update-modal').classList.add('active');
-            return true; // Halt further app initialization
+            return true; 
         }
         const announcement = appConfig.announcement || ''; const bannerContainer = document.getElementById('announcement-banner-container');
         if (announcement.trim() !== '' && !sessionStorage.getItem('announcement_closed')) { bannerContainer.innerHTML = `<div id="announcement-banner"><span>${announcement}</span><button onclick="window.closeAnnouncement()">&times;</button></div>`; }
@@ -858,6 +891,18 @@
 
     function updateDynamicElements() {
         if (!isConfigLoaded) return;
+
+        if (!isAdScriptLoaded && appConfig.libtlZoneId) {
+            const zoneId = appConfig.libtlZoneId;
+            const script = document.createElement('script');
+            script.src = '//libtl.com/sdk.js';
+            script.setAttribute('data-zone', zoneId);
+            script.setAttribute('data-sdk', `show_${zoneId}`);
+            script.async = true;
+            document.head.appendChild(script);
+            isAdScriptLoaded = true;
+        }
+
         const commissionRate = appConfig.refferBonus || 10;
         document.getElementById('referral-commission-badge').textContent = `${commissionRate}%`;
         document.getElementById('referral-description-p').textContent = `Earn ${commissionRate}% of your friends' earnings for life!`;
@@ -979,9 +1024,8 @@
         }
     }
 
-    // === MODIFIED: grantCommission replaced with grantMultiLevelCommission ===
     async function grantMultiLevelCommission(basePointsEarned, earningUserId, level = 1) {
-        if (level > 3) return; // Limit to 3 levels to prevent infinite loops
+        if (level > 3) return; 
 
         const earningUserSnapshot = await get(ref(database, `app/users/${earningUserId}`));
         if (!earningUserSnapshot.exists()) return;
@@ -1025,7 +1069,6 @@
                     };
                     await update(referrerRef, updates);
                     
-                    // Recursive call for the next level
                     await grantMultiLevelCommission(basePointsEarned, referrerId, level + 1);
                 }
             }
@@ -1065,10 +1108,13 @@
         const overlay = document.getElementById('timer-notification-overlay'), overlayContent = document.getElementById('timer-notification-content');
         const adTimerSeconds = network.timer || appConfig.adWatchTimerSeconds || 30;
         
-        if (typeof show_9892808 === 'function') {
-            show_9892808().catch(e => console.error("Ad SDK error:", e));
+        const adFunctionName = `show_${appConfig.libtlZoneId}`;
+        if (typeof window[adFunctionName] === 'function') {
+            window[adFunctionName]().catch(e => console.error("Ad SDK error:", e));
         } else {
-            console.warn("Ad SDK function not found.");
+            console.warn(`Ad SDK function '${adFunctionName}' not found. Please check if the ad script loaded correctly.`);
+            showToast("Ad service is currently unavailable. Please try again later.", "error");
+            return;
         }
 
         overlay.style.display = 'flex'; let countdown = adTimerSeconds;
@@ -1738,7 +1784,7 @@
     function renderOfferwall() {
         const container = document.getElementById('offerwall-content-container');
         if (!appConfig.offerwall?.enabled) {
-            container.innerHTML = `<div class="no-data"><i class="fa-solid fa- दुकान-slash"></i><p>Offerwall is currently unavailable.</p></div>`;
+            container.innerHTML = `<div class="no-data"><i class="fa-solid fa-store-slash"></i><p>Offerwall is currently unavailable.</p></div>`;
             return;
         }
         container.innerHTML = `
