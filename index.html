@@ -30,7 +30,6 @@
       --rank-gold: #ffd700;
       --rank-silver: #c0c0c0;
       --rank-bronze: #cd7f32;
-      /* নতুন সংযোজন: XP এবং লেভেলের জন্য রঙ */
       --xp-color: #ff9800;
       --level-color: #9c27b0;
     }
@@ -51,7 +50,6 @@
     .view.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* পরিবর্তিত হেডার: নোটিফিকেশন আইকন যুক্ত করা হয়েছে */
     .header { display: flex; align-items: center; justify-content: space-between; padding: 0 5px 15px 5px; }
     .header-left { display: flex; align-items: center; }
     .header-avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; overflow: hidden; }
@@ -88,7 +86,6 @@
     .tier-badge.bronze { background-color: var(--tier-bronze-color); }
     .tier-badge.silver { background-color: var(--tier-silver-color); }
     .tier-badge.gold { background-color: var(--tier-gold-color); }
-    /* নতুন সংযোজন: লেভেল ব্যাজের জন্য স্টাইল */
     .level-badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 12px; color: white; background-color: var(--level-color); }
 
     .info-list .info-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
@@ -102,8 +99,7 @@
     .profile-action-button i:first-child { margin-right: 15px; width: 20px; text-align: center; color: var(--primary-color); }
     .profile-action-button span { flex-grow: 1; font-weight: 600; }
     .profile-action-button i:last-child { color: var(--text-muted-color); }
-
-    /* নতুন সংযোজন: XP პროগ্রেস বারের জন্য স্টাইল */
+    
     .xp-progress-card { text-align: left; padding: 15px; }
     .xp-progress-card .progress-info { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: 600; color: var(--text-color); }
     .xp-progress-card .progress-info .level { color: var(--level-color); }
@@ -186,7 +182,6 @@
     .history-item-info { flex-grow: 1; display: flex; flex-direction: column; }
     .history-item-info .title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
     .history-item-info .details { font-size: 13px; color: var(--text-muted-color); }
-    /* নতুন সংযোজন: উইথড্রয়াল ডিটেইলসের জন্য স্টাইল */
     .withdrawal-details { font-size: 12px; margin-top: 5px; padding: 8px; background-color: #f9f9f9; border-radius: 6px; }
     .withdrawal-details p { margin: 3px 0; }
     
@@ -201,7 +196,6 @@
     .no-history, .no-referrals, .no-data { text-align: center; color: var(--text-muted-color); padding: 50px 20px; background: var(--card-bg); border-radius: 12px; }
     .no-history i, .no-referrals i, .no-data i { font-size: 48px; margin-bottom: 15px; color: #ccc; }
 
-    /* নতুন সংযোজন: নোটিফিকেশন মডালের জন্য স্টাইল */
     .notification-list { list-style: none; padding: 0; }
     .notification-item { display: flex; padding: 15px 0; border-bottom: 1px solid #eee; }
     .notification-item:last-child { border-bottom: none; }
@@ -399,7 +393,6 @@
     <div id="announcement-banner-container"></div>
     <main id="main-content">
 
-      <!-- পরিবর্তিত হেডার: নোটিফিকেশন আইকন যুক্ত করা হয়েছে -->
       <div id="common-header" class="header">
         <div class="header-left">
             <div class="header-avatar" id="header-avatar-placeholder"></div>
@@ -519,7 +512,6 @@
             <h2 id="profile-name" class="name">User <span id="profile-tier-badge"></span> <span id="profile-level-badge"></span></h2>
             <p id="profile-username" class="username">@username</p>
         </div>
-        <!-- নতুন সংযোজন: XP პროগ্রেস কার্ড -->
         <div class="card xp-progress-card" id="xp-progress-section" style="display: none;">
             <div class="progress-info">
                 <span class="level" id="profile-level-text">Level 1</span>
@@ -615,7 +607,6 @@
     </div>
   </div>
   
-  <!-- নতুন সংযোজন: নোটিফিকেশন মডাল -->
   <div class="modal-overlay" id="notification-modal">
       <div class="modal-content">
           <div class="modal-header">
@@ -623,7 +614,6 @@
           </div>
           <div class="modal-body" id="notification-list-container">
               <div class="notification-list">
-                  <!-- Notifications will be rendered here -->
               </div>
           </div>
            <div class="modal-actions" style="justify-content: center;">
@@ -654,7 +644,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, onValue, set, get, update, push, runTransaction, onChildAdded, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, onValue, set, get, update, push, runTransaction, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
     const bootstrapFirebaseConfig = {
@@ -680,6 +670,7 @@
     let currentHistoryPage = 1;
     const itemsPerPage = 15;
     let currentReferralsPage = 1;
+    let allUsersDataForReferrals = {};
 
     async function bootstrapApp() {
         try {
@@ -789,9 +780,11 @@
 
     async function initializeUser() {
         onValue(userRef, async (snapshot) => {
+            let justCreated = false;
             if (snapshot.exists()) {
                 userData = snapshot.val();
             } else {
+                justCreated = true;
                 const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
                 let initialBalance = 0; let initialHistory = {};
                 if (appConfig.welcomeBonusEnabled && appConfig.welcomeBonus > 0) {
@@ -803,11 +796,10 @@
                     balance: initialBalance, totalEarnings: initialBalance, totalAdsWatched: 0, totalReferralCommission: 0,
                     referralsList: {}, transactionHistory: initialHistory, tasksState: {},
                     checkinState: { streak: 0, lastClaimTimestamp: null },
-                    adTracking: { dailyCount: 0, hourlyCount: 0, lastAdTimestamp: null },
-                    dailyStats: { adsWatched: 0, referralCommission: 0, lastReset: new Date().toISOString() },
+                    adTracking: { dailyCount: 0, hourlyCount: 0, lastAdTimestamp: null, lastHourlyReset: null },
+                    dailyStats: { adsWatched: 0, referralCommission: 0, referrals: 0, lastReset: new Date().toISOString() },
                     leaderboardStats: { score: 0, lastReset: new Date().toISOString() },
                     isBlocked: false, joinedAt: new Date().toISOString(), blockReason: null,
-                    // নতুন সংযোজন: গ্যামিফিকেশন ডেটা
                     xp: 0, level: 1 
                 };
                 
@@ -823,7 +815,18 @@
                            newUser.profile.referredBy = null;
                         } else {
                            await set(push(ref(database, `app/users/${startParam}/referralsList`)), { userId: tgUser.id, joinedAt: new Date().toISOString() });
-                           // নতুন সংযোজন: রেফারারকে XP দেওয়া
+                           
+                           // Update referrer's daily stats for referrals
+                           const referrerDailyStats = referrerData.dailyStats || {};
+                           const isNewDayForReferrer = isNewDay(referrerDailyStats.lastReset);
+                           const newDailyReferrals = isNewDayForReferrer ? 1 : (referrerDailyStats.referrals || 0) + 1;
+                           const newLastReset = isNewDayForReferrer ? new Date().toISOString() : referrerDailyStats.lastReset;
+                           
+                           await update(referrerRef, {
+                               'dailyStats/referrals': newDailyReferrals,
+                               'dailyStats/lastReset': newLastReset
+                           });
+
                            if (appConfig.gamification?.enabled) {
                                const xpForReferral = appConfig.gamification.xpPerReferral || 0;
                                if (xpForReferral > 0) {
@@ -854,7 +857,11 @@
                 isUserLoaded = true; 
                 initializeAppUI(); 
             }
-            await checkAndResetDailyStats();
+
+            if (!justCreated) {
+                await checkAndResetAdLimits();
+            }
+
             await checkVpnStatus(); 
             updateDisplay();
         });
@@ -898,14 +905,22 @@
 
     function listenForNotifications() {
         if (!tgUser) return; const notificationsRef = ref(database, `app/users/${tgUser.id}/notifications`);
-        onChildAdded(notificationsRef, (snapshot) => {
-            const notification = snapshot.val();
-            if (notification && !notification.read) {
-                showToast(`Admin: ${notification.message}`, 'info', 5000);
+        onValue(notificationsRef, (snapshot) => {
+            let hasUnread = false;
+            if (snapshot.exists()) {
+                 snapshot.forEach((childSnapshot) => {
+                     const notification = childSnapshot.val();
+                     if (notification && !notification.read) {
+                         hasUnread = true;
+                     }
+                 });
+            }
+            if (hasUnread) {
                 document.getElementById('notification-dot').style.display = 'block';
             }
-        });
+        }, { onlyOnce: true });
     }
+
 
     function listenForGlobalNotifications() {
         onValue(globalNotificationRef, (snapshot) => {
@@ -1001,7 +1016,6 @@
             document.getElementById('leaderboard-section').style.display = 'none';
         }
         
-        // নতুন সংযোজন: গ্যামিফিকেশন সেকশন দেখানো বা লুকানো
         if(appConfig.gamification?.enabled) {
             document.getElementById('xp-progress-section').style.display = 'block';
         } else {
@@ -1014,7 +1028,31 @@
     }
         
     function isNewDay(timestamp) { if (!timestamp) return true; const today = new Date().setHours(0, 0, 0, 0); const thatDay = new Date(timestamp).setHours(0, 0, 0, 0); return today > thatDay; }
-    async function checkAndResetDailyStats() { if (!userData.dailyStats || isNewDay(userData.dailyStats.lastReset)) { await update(userRef, { 'dailyStats': { adsWatched: 0, referralCommission: 0, lastReset: new Date().toISOString() }, 'adTracking/dailyCount': 0, 'adTracking/hourlyCount': 0 }); } }
+    function isNewHour(timestamp) {
+        if (!timestamp) return true;
+        const now = new Date();
+        const lastReset = new Date(timestamp);
+        return now.getHours() !== lastReset.getHours() || now.toDateString() !== lastReset.toDateString();
+    }
+
+    async function checkAndResetAdLimits() {
+        const updates = {};
+        const now = new Date();
+
+        if (isNewDay(userData.dailyStats?.lastReset)) {
+            updates['dailyStats'] = { adsWatched: 0, referralCommission: 0, referrals: 0, lastReset: now.toISOString() };
+            updates['adTracking/dailyCount'] = 0;
+        }
+
+        if (isNewHour(userData.adTracking?.lastHourlyReset)) {
+            updates['adTracking/hourlyCount'] = 0;
+            updates['adTracking/lastHourlyReset'] = now.toISOString();
+        }
+        
+        if (Object.keys(updates).length > 0) {
+            await update(userRef, updates);
+        }
+    }
 
     window.showView = (viewId) => {
         if (!isConfigLoaded || !isUserLoaded) return; 
@@ -1064,6 +1102,8 @@
             }
         });
         document.getElementById('refer-today-commission').textContent = `${userData.dailyStats?.referralCommission || 0} Points`;
+        document.getElementById('refer-today-referrals').textContent = userData.dailyStats?.referrals || 0;
+
         document.getElementById('profile-balance').innerHTML = `${pointsBalance.toLocaleString()} Points <span class="bdt-value">${currencySymbol} ${balanceInBdt.toFixed(2)}</span>`;
         document.getElementById('profile-total-earnings').innerHTML = `${(userData.totalEarnings || 0).toLocaleString()} Points <span class="bdt-value">${((userData.totalEarnings || 0) / pointsPerCurrency).toFixed(2)} ${currencySymbol}</span>`;
         document.getElementById('profile-ads-watched').textContent = userData.totalAdsWatched || 0;
@@ -1075,7 +1115,6 @@
             document.getElementById('profile-tier-value').textContent = `${tier.name} (${tier.bonusPercent}% Bonus)`; tierInfoItem.style.display = 'flex';
         } else { tierBadge.textContent = ''; tierInfoItem.style.display = 'none'; }
         
-        // নতুন সংযোজন: XP এবং লেভেল UI আপডেট
         if (appConfig.gamification?.enabled) {
             const currentLevel = userData.level || 1;
             const currentXp = userData.xp || 0;
@@ -1156,11 +1195,23 @@
                 const referrerSnapshot = await get(referrerRef);
                 if (referrerSnapshot.exists()) {
                     const referrerData = referrerSnapshot.val();
+                    
+                    const isNewDayForReferrer = isNewDay(referrerData.dailyStats?.lastReset);
+                    const newDailyCommission = isNewDayForReferrer ? commissionAmount : (referrerData.dailyStats?.referralCommission || 0) + commissionAmount;
+
                     const updates = {
                         'balance': (referrerData.balance || 0) + commissionAmount,
                         'totalReferralCommission': (referrerData.totalReferralCommission || 0) + commissionAmount,
-                        'dailyStats/referralCommission': (referrerData.dailyStats?.referralCommission || 0) + commissionAmount
+                        'totalEarnings': (referrerData.totalEarnings || 0) + commissionAmount,
+                        'dailyStats/referralCommission': newDailyCommission
                     };
+
+                    if (isNewDayForReferrer) {
+                         updates['dailyStats/lastReset'] = new Date().toISOString();
+                         updates['dailyStats/adsWatched'] = 0; 
+                         updates['dailyStats/referrals'] = 0;
+                    }
+
                     updates[`transactionHistory/ref_${Date.now()}`] = {
                         type: 'referral',
                         amount: commissionAmount,
@@ -1175,7 +1226,6 @@
         }
     }
     
-    // নতুন সংযোজন: XP এবং লেভেল আপ লজিক
     async function grantXpAndCheckLevelUp(actionType) {
         if (!appConfig.gamification?.enabled) return;
         
@@ -1191,9 +1241,8 @@
 
         const newXp = (userData.xp || 0) + xpToGrant;
         await update(userRef, { xp: newXp });
-        userData.xp = newXp; // Update local data immediately
+        userData.xp = newXp;
 
-        // লেভেল আপ চেক
         const currentLevel = userData.level || 1;
         const nextLevelInfo = (xpConfig.levels || []).find(l => l.level === currentLevel + 1);
 
@@ -1202,13 +1251,13 @@
             
             const updates = {
                 level: currentLevel + 1,
-                balance: (userData.balance || 0) + bonus
+                balance: (userData.balance || 0) + bonus,
+                totalEarnings: (userData.totalEarnings || 0) + bonus
             };
             updates[`transactionHistory/levelup_${Date.now()}`] = { type: 'manual', amount: bonus, title: `Level Up to ${currentLevel + 1}!`, date: new Date().toISOString() };
             
             await update(userRef, updates);
             
-            // লেভেল আপ নোটিফিকেশন
             const overlay = document.getElementById('timer-notification-overlay');
             overlay.style.display = 'flex';
             overlay.querySelector('.timer-notification-content').innerHTML = `<div class="icon" style="color: var(--level-color);"><i class="fa-solid fa-star"></i></div><div>Level Up! You are now Level ${currentLevel + 1}</div>`;
@@ -1216,9 +1265,9 @@
         }
     }
     
-    async function grantReward(adNetwork, baseRewardPoints) {
+    async function grantReward(adNetworkName, baseRewardPoints) {
         const tier = getCurrentUserTier(), bonusPoints = Math.floor(baseRewardPoints * (tier.bonusPercent / 100));
-        const totalReward = baseRewardPoints + bonusPoints; const transactionTitle = bonusPoints > 0 ? `${adNetwork.name} Ad Reward (+${bonusPoints} bonus)` : `${adNetwork.name} Ad Reward`;
+        const totalReward = baseRewardPoints + bonusPoints; const transactionTitle = bonusPoints > 0 ? `${adNetworkName} Ad Reward (+${bonusPoints} bonus)` : `${adNetworkName} Ad Reward`;
         
         const updates = {
             'balance': (userData.balance || 0) + totalReward, 
@@ -1239,16 +1288,20 @@
         if (window.Telegram?.WebApp?.HapticFeedback) Telegram.WebApp.HapticFeedback.notificationOccurred('success');
     }
     
-    window.startAdCycleFor = (networkName) => {
+    window.startAdCycle = () => {
         if (isEarningBlocked) { return showToast("Earning is disabled due to network policy.", "error"); }
-        const network = (appConfig.adNetworks || []).find(n => n.name === networkName);
-        if (!network) return;
 
+        const adConfig = appConfig.adSystemConfig?.primaryAd;
+        if (!adConfig || !adConfig.enabled) {
+            return showToast("This earning method is temporarily unavailable.", "info");
+        }
+        
         const adTracking = userData.adTracking || { dailyCount: 0, hourlyCount: 0 };
         if (adTracking.dailyCount >= (appConfig.adsLimit || 250) || adTracking.hourlyCount >= (appConfig.hourlyAdsLimit || 25)) return;
         
         const overlay = document.getElementById('timer-notification-overlay'), overlayContent = document.getElementById('timer-notification-content');
-        const adTimerSeconds = network.timer || appConfig.adWatchTimerSeconds || 30;
+        
+        const adTimerSeconds = adConfig.timer || 30;
         
         const adFunctionName = `show_${appConfig.libtlZoneId}`;
         if (typeof window[adFunctionName] === 'function') {
@@ -1262,35 +1315,140 @@
         overlay.style.display = 'flex'; let countdown = adTimerSeconds;
         overlayContent.innerHTML = `<div class="icon"><i class="fa-solid fa-hourglass-half"></i></div><div>${countdown}</div>`;
         const intervalId = setInterval(() => { countdown--; overlayContent.innerHTML = `<div class="icon"><i class="fa-solid fa-hourglass-half"></i></div><div>${countdown}</div>`; if (countdown <= 0) clearInterval(intervalId); }, 1000);
+        
         setTimeout(async () => {
             clearInterval(intervalId);
-            let rewardPoints = network.reward || appConfig.adsReward || 1;
+            let rewardPoints = adConfig.reward || 1;
+            
             const totalRewardWithBonus = rewardPoints + Math.floor(rewardPoints * (getCurrentUserTier().bonusPercent / 100));
-            await grantReward(network, rewardPoints);
+            await grantReward("Primary", rewardPoints);
             overlayContent.innerHTML = `<div class="icon" style="color: var(--status-success);"><i class="fa-solid fa-check-circle"></i></div><div>+${totalRewardWithBonus} Points!</div>`;
             setTimeout(() => { overlay.style.display = 'none'; }, 2500);
         }, adTimerSeconds * 1000);
     };
 
+    async function triggerRewardedAd() {
+        const rewardedConfig = appConfig.adSystemConfig?.rewardedAd;
+        if (!rewardedConfig || !rewardedConfig.enabled) return;
+
+        showToast("Watch a short ad to get an extra bonus!", "info");
+
+        const overlay = document.getElementById('timer-notification-overlay');
+        const overlayContent = document.getElementById('timer-notification-content');
+        const adTimerSeconds = rewardedConfig.timer || 20;
+
+        const adFunctionName = `show_${appConfig.libtlZoneId}`;
+        if (typeof window[adFunctionName] === 'function') {
+            window[adFunctionName]().catch(e => console.error("Ad SDK error:", e));
+        } else {
+            console.warn(`Ad SDK function '${adFunctionName}' not found.`);
+            return;
+        }
+
+        overlay.style.display = 'flex';
+        let countdown = adTimerSeconds;
+        overlayContent.innerHTML = `<div class="icon"><i class="fa-solid fa-hourglass-half"></i></div><div>${countdown}</div>`;
+        const intervalId = setInterval(() => { countdown--; overlayContent.innerHTML = `<div class="icon"><i class="fa-solid fa-hourglass-half"></i></div><div>${countdown}</div>`; if (countdown <= 0) clearInterval(intervalId); }, 1000);
+
+        setTimeout(async () => {
+            clearInterval(intervalId);
+            let baseRewardPoints = rewardedConfig.reward || 0;
+            
+            await grantReward('Rewarded Task', baseRewardPoints); 
+
+            const totalRewardWithBonus = baseRewardPoints + Math.floor(baseRewardPoints * (getCurrentUserTier().bonusPercent / 100));
+            overlayContent.innerHTML = `<div class="icon" style="color: var(--status-success);"><i class="fa-solid fa-check-circle"></i></div><div>Extra Bonus: +${totalRewardWithBonus} Points!</div>`;
+            setTimeout(() => { overlay.style.display = 'none'; }, 2500);
+        }, adTimerSeconds * 1000);
+    }
+
+    async function claimSimpleTask(task) {
+        let reward = task.reward;
+        const tier = getCurrentUserTier();
+        const bonusPoints = Math.floor(reward * (tier.bonusPercent / 100));
+        const totalReward = reward + bonusPoints;
+        const transactionTitle = bonusPoints > 0 ? `Task: ${task.title} (+${bonusPoints} bonus)` : `Task: ${task.title}`;
+
+        const updates = {
+            'balance': (userData.balance || 0) + totalReward,
+            'totalEarnings': (userData.totalEarnings || 0) + totalReward,
+            'leaderboardStats/score': (userData.leaderboardStats?.score || 0) + totalReward,
+            [`tasksState/${task.id}/completed`]: true,
+            [`tasksState/${task.id}/pendingClaim`]: false
+        };
+        updates[`transactionHistory/task_${Date.now()}`] = { type: 'task', amount: totalReward, title: transactionTitle, date: new Date().toISOString() };
+        await update(userRef, updates);
+        await grantMultiLevelCommission(reward, tgUser.id);
+        await grantXpAndCheckLevelUp('task');
+        
+        const overlay = document.getElementById('timer-notification-overlay');
+        overlay.style.display = 'flex';
+        overlay.querySelector('.timer-notification-content').innerHTML = `<div class="icon" style="color: var(--status-task);"><i class="fa-solid fa-check-double"></i></div><div>+${totalReward} Points!</div>`;
+        setTimeout(() => { overlay.style.display = 'none'; }, 2500);
+
+        const rewardedConfig = appConfig.adSystemConfig?.rewardedAd;
+        if (rewardedConfig && rewardedConfig.enabled && rewardedConfig.triggerOnTaskCompletion) {
+            setTimeout(() => {
+                triggerRewardedAd();
+            }, 2600);
+        }
+    }
+
     function renderCheckinDays() {
-        const timelineContainer = document.getElementById('checkin-timeline-container'), claimButton = document.getElementById('claim-checkin-button');
-        const checkinRewards = appConfig.dailyCheckinRewards || []; if (!timelineContainer || !claimButton || checkinRewards.length === 0) return;
-        const { streak = 0, lastClaimTimestamp = null } = userData.checkinState || {}; const canClaimToday = isNewDay(lastClaimTimestamp);
+        const timelineContainer = document.getElementById('checkin-timeline-container'),
+              claimButton = document.getElementById('claim-checkin-button');
+        const checkinRewards = appConfig.dailyCheckinRewards || [];
+        if (!timelineContainer || !claimButton || checkinRewards.length === 0) return;
+
+        const { streak = 0, lastClaimTimestamp = null } = userData.checkinState || {};
+        const canClaimToday = isNewDay(lastClaimTimestamp);
         let isClaimable = false, claimableReward = 0;
+
         timelineContainer.innerHTML = checkinRewards.map((dayInfo, index) => {
-            const reward = dayInfo.reward; let status = 'locked', icon = '🎁';
-            if (index < streak) { status = 'claimed'; icon = '<i class="fa-solid fa-check"></i>'; }
-            else if (index === streak && canClaimToday) { status = 'claimable'; icon = '<i class="fa-solid fa-gift"></i>'; isClaimable = true; claimableReward = reward; }
+            const reward = dayInfo.reward;
+            let status = 'locked', icon = '🎁';
+            if (index < streak) {
+                status = 'claimed'; icon = '<i class="fa-solid fa-check"></i>';
+            } else if (index === streak && canClaimToday) {
+                status = 'claimable'; icon = '<i class="fa-solid fa-gift"></i>';
+                isClaimable = true;
+                claimableReward = reward;
+            }
             return `<div class="day-item ${status}"><div class="day-content"><div class="day-circle">${icon}</div><div class="day-reward">${reward} Points</div><div class="day-number">Day ${index + 1}</div></div></div>`;
         }).join('');
-        if (isClaimable) { claimButton.innerHTML = `<i class="fa-solid fa-gift"></i> Claim ${claimableReward} Points`; claimButton.disabled = false; }
-        else if (streak >= checkinRewards.length) { claimButton.innerHTML = `<i class="fa-solid fa-check-circle"></i> Cycle Complete`; claimButton.disabled = true; }
-        else { claimButton.innerHTML = `<i class="fa-solid fa-clock"></i> Come back tomorrow`; claimButton.disabled = true; }
+        
+        const hourlyLimit = appConfig.hourlyAdsLimit || 25;
+        const hourlyCount = userData.adTracking?.hourlyCount || 0;
+        const hourlyLimitMet = hourlyCount >= hourlyLimit;
+
+        if (isClaimable) {
+            if (hourlyLimitMet) {
+                claimButton.innerHTML = `<i class="fa-solid fa-gift"></i> Claim ${claimableReward} Points`;
+                claimButton.disabled = false;
+            } else {
+                const remainingAds = hourlyLimit - hourlyCount;
+                claimButton.innerHTML = `<i class="fa-solid fa-play-circle"></i> Watch ${remainingAds} more ads`;
+                claimButton.disabled = true;
+            }
+        } else if (streak >= checkinRewards.length) {
+            claimButton.innerHTML = `<i class="fa-solid fa-check-circle"></i> Cycle Complete`;
+            claimButton.disabled = true;
+        } else {
+            claimButton.innerHTML = `<i class="fa-solid fa-clock"></i> Come back tomorrow`;
+            claimButton.disabled = true;
+        }
     }
+
 
     function initializeEventListeners() {
         document.getElementById('claim-checkin-button').addEventListener('click', async () => {
             if (isEarningBlocked) { return showToast("Earning is disabled due to network policy.", "error"); }
+            const hourlyLimit = appConfig.hourlyAdsLimit || 25;
+            const hourlyCount = userData.adTracking?.hourlyCount || 0;
+            if (hourlyCount < hourlyLimit) {
+                return showToast(`You need to watch ${hourlyLimit - hourlyCount} more ads this hour to claim.`, "error");
+            }
+
             const checkinRewards = appConfig.dailyCheckinRewards || []; const { streak = 0, lastClaimTimestamp = null } = userData.checkinState || {};
             if (streak < checkinRewards.length && isNewDay(lastClaimTimestamp)) {
                 const dayInfo = checkinRewards[streak]; if (!dayInfo) return;
@@ -1318,12 +1476,44 @@
     }
 
     function renderAdNetworks() {
-        const container = document.getElementById('ad-networks-container'); if (!container || !appConfig.adNetworksEnabled || !appConfig.adNetworks) return container.innerHTML = "";
+        const container = document.getElementById('ad-networks-container');
+        if (!appConfig.adSystemConfig?.primaryAd?.enabled) {
+            container.innerHTML = "";
+            return;
+        }
+        
         const hourlyLimit = appConfig.hourlyAdsLimit || 25;
-        container.innerHTML = appConfig.adNetworks.filter(n => n.enabled).map(network => `<div class="ad-network-card"><a href="#" class="earn-option-card" onclick="event.preventDefault(); document.querySelector('.watch-ad-button[data-network=\\'${network.name}\\']').click();"><div class="logo-wrapper"><img src="${appConfig.assets?.adNetworkLogo || ''}" alt="${network.name} Logo"></div><div class="info-wrapper"><span class="company-name">${network.name}</span><span class="subtitle">Watch ads & get rewards</span></div><div class="action-wrapper"><i class="fa-solid fa-chevron-right"></i></div></a><div class="card progress-card" style="margin-top: -5px; border-radius: 0 0 12px 12px; margin-bottom: 12px;"><h3>Watch Ads</h3><div class="progress-info"><span>Completed: <span class="tasks-completed-daily">0</span></span><span>Remaining: <span class="tasks-remaining-daily">${appConfig.adsLimit || 250}</span></span></div><div class="progress-bar"><div class="progress-bar-inner"></div></div><div class="limits-grid"><div class="limit-card"><div class="icon"><i class="fa-solid fa-clock"></i></div><h3 class="value hourly-limit-value">0/${hourlyLimit}</h3><p class="label">Hourly Limit</p></div><div class="limit-card"><div class="icon"><i class="fa-solid fa-calendar-day"></i></div><h3 class="value daily-limit-value">0/${appConfig.adsLimit || 250}</h3><p class="label">Daily Limit</p></div></div><button class="action-button primary-button watch-ad-button" data-network="${network.name}" onclick="window.startAdCycleFor('${network.name}')"><i class="fa-solid fa-play-circle"></i> Watch Ad & Earn</button></div></div>`).join('');
+        const dailyLimit = appConfig.adsLimit || 250;
+        
+        container.innerHTML = `
+            <div class="ad-network-card">
+                <div class="card progress-card" style="margin-bottom: 12px;">
+                    <h3>Watch Ads</h3>
+                    <div class="progress-info">
+                        <span>Completed: <span class="tasks-completed-daily">0</span></span>
+                        <span>Remaining: <span class="tasks-remaining-daily">${dailyLimit}</span></span>
+                    </div>
+                    <div class="progress-bar"><div class="progress-bar-inner"></div></div>
+                    <div class="limits-grid">
+                        <div class="limit-card">
+                            <div class="icon"><i class="fa-solid fa-clock"></i></div>
+                            <h3 class="value hourly-limit-value">0/${hourlyLimit}</h3>
+                            <p class="label">Hourly Limit</p>
+                        </div>
+                        <div class="limit-card">
+                            <div class="icon"><i class="fa-solid fa-calendar-day"></i></div>
+                            <h3 class="value daily-limit-value">0/${dailyLimit}</h3>
+                            <p class="label">Daily Limit</p>
+                        </div>
+                    </div>
+                    <button class="action-button primary-button watch-ad-button" onclick="window.startAdCycle()">
+                        <i class="fa-solid fa-play-circle"></i> Watch Ad & Earn
+                    </button>
+                </div>
+            </div>`;
     }
+
     
-    // পরিবর্তিত ফাংশন: নতুন টাস্কের ধরন হ্যান্ডেল করার জন্য
     function renderTasks() {
         const container = document.getElementById('tasks-container');
         const tasks = appConfig.tasks || [];
@@ -1374,7 +1564,6 @@
         }).join('');
     }
     
-    // পরিবর্তিত ফাংশন: নতুন টাস্কের ধরন হ্যান্ডেল করার জন্য
     window.handleTaskClick = async (taskId) => {
         if (isEarningBlocked) { return showToast("Earning is disabled due to network policy.", "error"); }
         const task = (appConfig.tasks || []).find(t => t.id === taskId);
@@ -1405,30 +1594,6 @@
             }
         }
     };
-    
-    async function claimSimpleTask(task) {
-        let reward = task.reward;
-        const tier = getCurrentUserTier();
-        const bonusPoints = Math.floor(reward * (tier.bonusPercent / 100));
-        const totalReward = reward + bonusPoints;
-        const transactionTitle = bonusPoints > 0 ? `Task: ${task.title} (+${bonusPoints} bonus)` : `Task: ${task.title}`;
-
-        const updates = {
-            'balance': (userData.balance || 0) + totalReward,
-            'totalEarnings': (userData.totalEarnings || 0) + totalReward,
-            'leaderboardStats/score': (userData.leaderboardStats?.score || 0) + totalReward,
-            [`tasksState/${task.id}/completed`]: true,
-            [`tasksState/${task.id}/pendingClaim`]: false
-        };
-        updates[`transactionHistory/task_${Date.now()}`] = { type: 'task', amount: totalReward, title: transactionTitle, date: new Date().toISOString() };
-        await update(userRef, updates);
-        await grantMultiLevelCommission(reward, tgUser.id);
-        await grantXpAndCheckLevelUp('task');
-        
-        const overlay = document.getElementById('timer-notification-overlay'); overlay.style.display = 'flex';
-        overlay.querySelector('.timer-notification-content').innerHTML = `<div class="icon" style="color: var(--status-task);"><i class="fa-solid fa-check-double"></i></div><div>+${totalReward} Points!</div>`;
-        setTimeout(() => { overlay.style.display = 'none'; }, 2500);
-    }
     
     function openScreenshotTaskModal(task) {
         document.getElementById('task-modal-title').textContent = task.title;
@@ -1542,6 +1707,7 @@
             const reward = transactionResult.snapshot.val().reward;
             const updates = { 
                 'balance': (userData.balance || 0) + reward,
+                'totalEarnings': (userData.totalEarnings || 0) + reward,
                 'leaderboardStats/score': (userData.leaderboardStats?.score || 0) + reward
             };
             updates[`transactionHistory/promo_${Date.now()}`] = { type: 'manual', amount: reward, title: `Promo Code: ${trimmedCode}`, date: new Date().toISOString() };
@@ -1665,7 +1831,6 @@
         showToast("Withdrawal request submitted successfully.", "success");
     };
     
-    // পরিবর্তিত ফাংশন: বিস্তারিত উইথড্রয়াল তথ্য দেখানোর জন্য
     async function renderHistory(page = 1) {
         currentHistoryPage = page;
         const container = document.getElementById('history-list-container');
@@ -1750,36 +1915,43 @@
         }
     }
 
+    async function cacheAllUsers() {
+        const snapshot = await get(usersRef);
+        if (snapshot.exists()) {
+            allUsersDataForReferrals = snapshot.val();
+        }
+    }
+    
     window.renderReferralsList = async (page = 1) => {
+        if (Object.keys(allUsersDataForReferrals).length === 0) {
+            await cacheAllUsers();
+        }
         currentReferralsPage = page;
         const container = document.getElementById('referrals-list-container');
         const paginationContainer = document.getElementById('referrals-pagination-container');
         const searchInput = document.getElementById('referral-search-input').value.toLowerCase();
-        const referrals = userData.referralsList || {};
-        const referralEntries = Object.values(referrals);
-
+        
+        const referralEntries = Object.values(userData.referralsList || {});
         if (referralEntries.length === 0) {
             container.innerHTML = `<div class="no-referrals"><i class="fa-solid fa-user-group"></i><p>You haven't referred anyone yet.</p></div>`;
             paginationContainer.innerHTML = '';
             return;
         }
+        
         container.innerHTML = '<p style="text-align: center;">Loading referrals...</p>';
+        
+        const filteredReferrals = referralEntries.map(ref => {
+            const referredUser = allUsersDataForReferrals[ref.userId];
+            if (!referredUser) return null;
 
-        let todayReferralsCount = 0;
-        const today = new Date().setHours(0, 0, 0, 0);
-        
-        const userPromises = referralEntries.map(ref => get(ref(database, `app/users/${ref.userId}`)));
-        const userSnapshots = await Promise.all(userPromises);
-        
-        const filteredReferrals = userSnapshots.filter(userSnapshot => {
-            if(userSnapshot.exists()){
-                const referredUser = userSnapshot.val();
-                const name = `${referredUser.profile?.firstName || ''} ${referredUser.profile?.lastName || ''}`.trim() || 'No Name';
-                const username = referredUser.profile?.username || '';
-                return !searchInput || name.toLowerCase().includes(searchInput) || username.toLowerCase().includes(searchInput);
+            const name = `${referredUser.profile?.firstName || ''} ${referredUser.profile?.lastName || ''}`.trim() || 'No Name';
+            const username = referredUser.profile?.username || '';
+            
+            if (!searchInput || name.toLowerCase().includes(searchInput) || username.toLowerCase().includes(searchInput)) {
+                return referredUser;
             }
-            return false;
-        }).map(s => s.val()).sort((a,b) => new Date(b.joinedAt) - new Date(a.joinedAt));
+            return null;
+        }).filter(Boolean).sort((a,b) => new Date(b.joinedAt) - new Date(a.joinedAt));
 
 
         const totalPages = Math.ceil(filteredReferrals.length / itemsPerPage);
@@ -1792,10 +1964,6 @@
             const joinDate = new Date(referredUser.joinedAt);
             const joinDateStr = joinDate.toLocaleDateString();
             
-            if (joinDate.setHours(0, 0, 0, 0) === today) {
-                todayReferralsCount++;
-            }
-
             return `
                 <div class="history-item referral">
                     <div class="icon-wrapper"><i class="fa-solid fa-user-check"></i></div>
@@ -1807,7 +1975,6 @@
         }).join('');
         
         container.innerHTML = listHtml || `<div class="no-referrals"><p>No matching referrals found.</p></div>`;
-        document.getElementById('refer-today-referrals').textContent = todayReferralsCount;
         renderPaginationControls(paginationContainer, totalPages, page, 'renderReferralsList');
     };
 
@@ -1922,21 +2089,18 @@
         openModal('ticket-details-modal');
     };
     
-    // নতুন সংযোজন: নোটিফিকেশন মডাল খোলার ফাংশন
     window.openNotificationsModal = async () => {
         const container = document.getElementById('notification-list-container').querySelector('.notification-list');
         container.innerHTML = `<div class="spinner" style="margin: 20px auto;"></div>`;
         openModal('notification-modal');
 
         let allNotifications = [];
-        // গ্লোবাল নোটিফিকেশন
         const globalSnap = await get(globalNotificationRef);
         if (globalSnap.exists()) {
             const globalNotif = globalSnap.val();
             allNotifications.push({ ...globalNotif, type: 'global', date: globalNotif.timestamp });
         }
         
-        // ব্যক্তিগত নোটিফিকেশন
         const personalNotifsRef = ref(database, `app/users/${tgUser.id}/notifications`);
         const personalSnap = await get(personalNotifsRef);
         if (personalSnap.exists()) {
@@ -1948,7 +2112,6 @@
                     updates[`${key}/read`] = true;
                 }
             });
-            // অপঠিত গুলোকে পঠিত হিসেবে মার্ক করা
             if (Object.keys(updates).length > 0) {
                 await update(personalNotifsRef, updates);
                 document.getElementById('notification-dot').style.display = 'none';
